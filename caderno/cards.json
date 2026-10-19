@@ -1,0 +1,32 @@
+[
+ {
+  "id": "ampc",
+  "esp": "Infectologia",
+  "tema": "AmpC",
+  "data": "2026-10-16",
+  "pergunta": "Bacteremia por *Enterobacter cloacae* \"sensível\" à ceftriaxona no antibiograma. Qual antibiótico evitar e qual usar?",
+  "erro": "Não conhecia o mecanismo AmpC.",
+  "pontos": [
+   "**AmpC é resistência de gram-negativos.** Risco alto: *Enterobacter cloacae*, *Klebsiella aerogenes*, *Citrobacter freundii*. Risco baixo: *Serratia*, *Morganella*, *Providencia*.",
+   "**Mecanismo:** cefalosporina de 3ª geração seleciona mutantes desreprimidos. O antibiograma mostra sensível e o tratamento falha no 3º–5º dia.",
+   "**Evitar em infecção invasiva:** ceftriaxona, cefotaxima, ceftazidima e pip-tazo.",
+   "**Tratar:** cefepime se MIC ≤ 2. Carbapenêmico se MIC ≥ 4 (suspeitar de ESBL)."
+  ],
+  "pegadinha": "clavulanato não inibe AmpC, e resistência à cefoxitina é marcador do mecanismo. Os mnemônicos SPACE e SPICE estão desatualizados: classificar pelo risco (IDSA)."
+ },
+ {
+  "id": "monobactamicos",
+  "esp": "Infectologia",
+  "tema": "Monobactâmicos",
+  "data": "2026-10-19",
+  "pergunta": "Alérgico a penicilina com infecção por gram-negativo. O aztreonam é uma penicilina segura?",
+  "erro": "Achei que monobactâmico era uma penicilina.",
+  "pontos": [
+   "**Não é penicilina.** É uma classe própria de betalactâmico, só com o anel betalactâmico (sem segundo anel).",
+   "**Representante:** aztreonam.",
+   "**Alergia:** reação cruzada com penicilinas é desprezível, então é seguro em alérgico a penicilina.",
+   "**Espectro:** só gram-negativos aeróbios, incluindo *Pseudomonas*. Não cobre gram-positivos nem anaeróbios."
+  ],
+  "pegadinha": "tem a mesma cadeia lateral R1 da ceftazidima. Evitar em alérgico a ceftazidima."
+ }
+]

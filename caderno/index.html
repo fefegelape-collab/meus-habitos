@@ -1,0 +1,170 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Erros">
+<meta name="theme-color" content="#F3EFEE" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#151011" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+</head><body>
+<title>Caderno de erros</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: one mobile column (max 560px); "Revisar" shows one flashcard at a time, "Caderno" lists entries by specialty; fixed bottom tab bar */
+:root{
+  --bg:#F3EFEE; --surface:#FFFFFF; --sunk:#E9E2E0; --ink:#251A1C; --muted:#6E5F62; --line:#DDD3D1;
+  --pen:#B3261E; --pen-ink:#FFFFFF; --ok:#2B7A4B; --soft:#F6E3E1;
+  --f-display:"Bricolage Grotesque","Figtree",system-ui,sans-serif;
+  --f-body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#151011; --surface:#1F1819; --sunk:#2A2122; --ink:#F0E6E7; --muted:#A8979A; --line:#372C2E;
+  --pen:#FF8A80; --pen-ink:#151011; --ok:#6CCB92; --soft:#3A2122; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#151011; --surface:#1F1819; --sunk:#2A2122; --ink:#F0E6E7; --muted:#A8979A; --line:#372C2E;
+  --pen:#FF8A80; --pen-ink:#151011; --ok:#6CCB92; --soft:#3A2122; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--f-body);font-size:15px;line-height:1.5;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 100px}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+button:focus-visible{outline:2px solid var(--pen);outline-offset:2px}
+.wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:18px;padding-top:18px}
+h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance}
+.top{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.brand{font-family:var(--f-display);font-weight:800;font-size:15px}
+.mode{font-size:12px;color:var(--muted)}
+.hero h1{font-size:clamp(26px,7vw,34px);font-weight:800;letter-spacing:-.02em;line-height:1.08}
+.hero h1 em{font-style:normal;color:var(--pen)}
+.hero p{margin:6px 0 0;color:var(--muted)}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.chip{font-size:12px;font-weight:700;padding:3px 10px;border-radius:99px;background:var(--soft);color:var(--pen);align-self:flex-start}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:14px}
+.q{font-family:var(--f-display);font-weight:600;font-size:20px;line-height:1.3;letter-spacing:-.01em}
+.wrong{font-size:13.5px;color:var(--muted);border-left:3px solid var(--pen);padding-left:10px}
+.wrong b{color:var(--pen)}
+.answer{display:flex;flex-direction:column;gap:10px;border-top:1px dashed var(--line);padding-top:14px}
+.answer ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:8px}
+.answer li b{font-weight:700}
+.trap{background:var(--soft);border-radius:10px;padding:10px 12px;font-size:14px}
+.trap b{color:var(--pen)}
+.btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.primary{padding:12px 18px;border-radius:99px;background:var(--ink);color:var(--bg);font-weight:700}
+.miss{padding:12px;border-radius:99px;border:1.5px solid var(--pen);color:var(--pen);font-weight:700}
+.hit{padding:12px;border-radius:99px;background:var(--ok);color:var(--surface);font-weight:700}
+.hint{font-size:12.5px;color:var(--muted);margin:0;text-align:center}
+.progress{display:flex;gap:4px}
+.progress i{flex:1;height:4px;border-radius:2px;background:var(--sunk)}
+.progress i.on{background:var(--pen)}
+
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:var(--r);padding:22px;display:flex;flex-direction:column;gap:8px}
+.empty p{margin:0;color:var(--muted)}
+
+.group{display:flex;flex-direction:column;gap:8px}
+.list{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.entry{border-top:1px solid var(--line)}
+.entry:first-child{border-top:0}
+.ehead{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;width:100%;text-align:left;padding:13px 14px}
+.ename{font-weight:700}
+.emeta{font-size:12.5px;color:var(--muted)}
+.dots{display:flex;gap:3px}
+.dots i{width:9px;height:9px;border-radius:50%;background:var(--sunk)}
+.dots i.on{background:var(--ok)}
+.done-tag{font-size:11px;font-weight:700;color:var(--ok)}
+.ebody{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
+.ebody .answer{border-top:0;padding-top:0}
+.small{font-size:13px;font-weight:600;color:var(--muted);padding:6px 0;align-self:flex-start;text-decoration:underline}
+
+.tabs{position:fixed;left:0;right:0;bottom:0;padding:8px max(16px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-top:1px solid var(--line);display:flex;justify-content:center;z-index:5}
+.tabs .inner{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%;max-width:560px;background:var(--sunk);padding:4px;border-radius:99px}
+.tabs button{padding:9px 4px;font-size:14px;border-radius:99px;font-weight:600;color:var(--muted)}
+.tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgb(0 0 0 / .12)}
+.badge{display:inline-grid;place-items:center;min-width:18px;height:18px;border-radius:9px;background:var(--pen);color:var(--pen-ink);font-size:11px;margin-left:4px;padding:0 5px}
+.toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:99px;font-size:14px;z-index:20}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <div class="top"><span class="brand">Caderno de erros</span><span class="mode" id="mode">Carregando…</span></div>
+  <div id="view"><p class="emeta">Carregando seus erros…</p></div>
+</div>
+<nav class="tabs"><div class="inner" role="tablist">
+  <button role="tab" id="t-rev" aria-selected="true" data-tab="rev">Revisar</button>
+  <button role="tab" id="t-cad" aria-selected="false" data-tab="cad">Caderno</button>
+</div></nav>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const GAP=[1,3,7,15,30,60];
+const PKEY="caderno-progresso-v1";
+let items=[], prog={}, tab="rev", queue=null, shown=false, open=new Set();
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const rich=s=>esc(s).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/\*(.+?)\*/g,"<i>$1</i>");
+const iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const today=()=>iso(new Date());
+function addDays(n){const d=new Date();d.setDate(d.getDate()+n);return iso(d)}
+function br(s){if(!s)return"";const[y,m,d]=s.split("-");return d+"/"+m}
+function rel(s){if(s<=today())return"hoje";if(s===addDays(1))return"amanhã";return br(s)}
+function loadProg(){try{prog=JSON.parse(localStorage.getItem(PKEY)||"{}")||{}}catch(e){prog={}}}
+function saveProg(){try{localStorage.setItem(PKEY,JSON.stringify(prog));return true}catch(e){return false}}
+function merge(cards){items=cards.map(c=>{const p=prog[c.id]||{};return {...c,nivel:p.nivel||0,proxima:p.proxima||c.data||today()}})}
+const due=()=>items.filter(e=>e.nivel<5&&e.proxima<=today());
+function toast(t){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>el.hidden=true,2200)}
+function answerHTML(e){return `<div class="answer"><ul>${(e.pontos||[]).map(p=>`<li>${rich(p)}</li>`).join("")}</ul>${e.pegadinha?`<div class="trap"><b>Pegadinha:</b> ${rich(e.pegadinha)}</div>`:""}</div>`}
+function dots(n){return `<span class="dots" aria-label="Nível ${n} de 5">${[0,1,2,3,4].map(i=>`<i class="${i<n?"on":""}"></i>`).join("")}</span>`}
+function pending(){return (queue||[]).filter(id=>{const e=items.find(x=>x.id===id);return e&&e.nivel<5&&e.proxima<=today()})}
+function renderRev(){
+  if(queue===null) queue=due().map(e=>e.id);
+  const total=queue.length,left=pending(),doneN=total-left.length;
+  if(!items.length) return `<div class="empty"><h2>Nenhum erro ainda</h2><p>Mande no chat do projeto a questão que você errou. Ela aparece aqui como um cartão de revisão.</p></div>`;
+  if(!left.length){const nxt=items.filter(e=>e.nivel<5).map(e=>e.proxima).sort()[0];
+    return `<div class="hero"><h1>Revisão em dia.</h1><p>${nxt?`Próxima revisão ${rel(nxt)} (${br(nxt)}).`:"Todos os temas estão dominados."}</p></div><div class="empty"><p>${items.length} ${items.length===1?"erro anotado":"erros anotados"} · ${items.filter(e=>e.nivel>=5).length} dominados</p></div>`}
+  const e=items.find(x=>x.id===left[0]);
+  return `<div class="hero"><h1><em>${left.length}</em> ${left.length===1?"tema":"temas"} para hoje</h1><p>Responda de cabeça antes de abrir a resposta.</p></div>
+  ${total>1?`<div class="progress">${Array.from({length:total},(_,i)=>`<i class="${i<doneN?"on":""}"></i>`).join("")}</div>`:""}
+  <article class="card"><span class="chip">${esc(e.esp)} · ${esc(e.tema)}</span><div class="q">${rich(e.pergunta)}</div>
+  ${shown?`<div class="wrong"><b>Seu erro:</b> ${rich(e.erro)}</div>${answerHTML(e)}
+    <div class="btns"><button class="miss" data-act="miss">Ainda erro</button><button class="hit" data-act="hit">Lembrei</button></div>
+    <p class="hint">"Lembrei" adia para ${GAP[Math.min(e.nivel+1,5)]} dias · "Ainda erro" volta amanhã</p>`
+  :`<button class="primary" data-act="show">Ver resposta</button>`}</article>`}
+function renderCad(){
+  if(!items.length) return `<div class="empty"><h2>Caderno vazio</h2><p>Os erros que você mandar no chat do projeto aparecem aqui, separados por especialidade.</p></div>`;
+  const g={};items.forEach(e=>(g[e.esp]=g[e.esp]||[]).push(e));const dom=items.filter(e=>e.nivel>=5).length;
+  return `<div class="hero"><h1>${items.length} ${items.length===1?"erro":"erros"} anotados</h1><p>${dom} dominados. Cada acerto seguido sobe um nível; no quinto, o tema sai da revisão.</p></div>`+
+  Object.keys(g).sort().map(k=>`<section class="group"><span class="eyebrow">${esc(k)}</span><div class="list">${
+    g[k].sort((a,b)=>(b.data||"").localeCompare(a.data||"")).map(e=>{const n=e.nivel,o=open.has(e.id);return `<div class="entry">
+    <button class="ehead" data-act="toggle" data-id="${esc(e.id)}" aria-expanded="${o}"><span><span class="ename">${esc(e.tema)}</span><br><span class="emeta">anotado ${br(e.data)} · ${n>=5?'<span class="done-tag">dominado</span>':"revisar "+rel(e.proxima)}</span></span>${dots(n)}</button>
+    ${o?`<div class="ebody"><div class="wrong"><b>Seu erro:</b> ${rich(e.erro)}</div>${answerHTML(e)}${n>=5?`<button class="small" data-act="reset" data-id="${esc(e.id)}">Voltar para a revisão</button>`:""}</div>`:""}</div>`}).join("")}</div></section>`).join("")}
+function render(){const n=due().length;
+  $("#t-rev").innerHTML="Revisar"+(n?`<span class="badge">${n}</span>`:"");
+  $("#t-rev").setAttribute("aria-selected",tab==="rev");$("#t-cad").setAttribute("aria-selected",tab==="cad");
+  $("#view").innerHTML=tab==="rev"?renderRev():renderCad()}
+function setProg(id,nivel,proxima){prog[id]={nivel,proxima};const e=items.find(x=>x.id===id);if(e){e.nivel=nivel;e.proxima=proxima}return saveProg()}
+document.addEventListener("click",ev=>{const t=ev.target.closest("[data-tab],[data-act]");if(!t)return;
+  if(t.dataset.tab){tab=t.dataset.tab;if(tab==="rev"){queue=null;shown=false}render();scrollTo(0,0);return}
+  const a=t.dataset.act;
+  if(a==="show"){shown=true;render()}
+  else if(a==="hit"||a==="miss"){const e=items.find(x=>x.id===pending()[0]);if(!e)return;const hit=a==="hit";
+    const nivel=hit?Math.min(e.nivel+1,5):0,proxima=hit?addDays(GAP[nivel]||60):addDays(1);
+    const ok=setProg(e.id,nivel,proxima);shown=false;render();
+    toast(!ok?"Não deu para salvar neste aparelho":hit?(nivel>=5?"Dominado!":"Próxima revisão "+rel(proxima)):"Volta amanhã")}
+  else if(a==="toggle"){const id=t.dataset.id;open.has(id)?open.delete(id):open.add(id);render()}
+  else if(a==="reset"){setProg(t.dataset.id,0,today());render();toast("Volta para a revisão de hoje")}
+});
+async function sync(){
+  try{const r=await fetch("cards.json?t="+Date.now(),{cache:"no-store"});if(!r.ok)throw 0;const cards=await r.json();
+    try{localStorage.setItem("caderno-cards",JSON.stringify(cards))}catch(e){}
+    merge(cards);$("#mode").textContent="Atualizado";}
+  catch(e){let c=[];try{c=JSON.parse(localStorage.getItem("caderno-cards")||"[]")}catch(_){}
+    merge(c);$("#mode").textContent=c.length?"Sem internet · versão salva":"Sem internet";}
+  render()}
+loadProg();sync();
+document.addEventListener("visibilitychange",()=>{if(!document.hidden){queue=null;sync()}});
+</script>
+</body></html>
