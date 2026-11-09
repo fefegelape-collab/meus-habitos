@@ -622,9 +622,9 @@ function readForm(){const e=S.editing;if(!e)return;const tt=$('#f-ttitle');if(tt
 
 /* ---------- mês: dashboard de novembro ---------- */
 const MX={first:'2026-11-01',start:'2026-11-08',last:'2026-11-30'};
-const TRIPS=[['2026-11-19','2026-11-21','Fortaleza'],['2026-11-28','2026-11-29','São Paulo']];
+const TRIPS=[['2026-11-19','2026-11-21','Fortaleza'],['2026-11-28','2026-11-29','São Paulo'],['2026-11-08','2026-11-10','volta para casa']];
 const GMETA={treino:{s:'Treinos'},mestrado:{s:'Mestrado'},logos:{s:'Logosofia'}};
-const GDEF={treino:{name:'Treinos',target:18,antes:null},mestrado:{name:'Mestrado · texto da qualificação',target:720,antes:0},logos:{name:'Logosofia',target:46,antes:0}};
+const GDEF={treino:{name:'Treinos',target:18,antes:null},mestrado:{name:'Mestrado · texto da qualificação',target:600,antes:0},logos:{name:'Logosofia',target:46,antes:0}};
 const BK={personal:{n:'Personal',g:'treino',v:1,h:'h-personal'},fullbody:{n:'Treino base · Fullbody',g:'treino',v:1,h:'h-musculacao'},cardio:{n:'Cardio · bike ou elíptico',g:'treino',v:1,h:'h-cardio'},
   mestrado:{n:'Mestrado · qualificação',g:'mestrado',v:40},logos:{n:'Logosofia',g:'logos',v:2},revisao:{n:'Revisão da semana (aba Domingo)'}};
 const ROT=[
@@ -636,7 +636,7 @@ const ROT=[
  {k:'viagem',label:'Dia de viagem',dows:[],b:[['Dia todo','!Viagem'],['Quando der','logos']]}];
 const ST={hit:'batida',ok:'no ritmo',late:'atrasada'};
 const LSM='meus-habitos.mes';
-function normM(m){m=m&&typeof m==='object'?m:{};m.goals=m.goals||{};Object.keys(GDEF).forEach(k=>m.goals[k]={...GDEF[k],...(m.goals[k]||{})});m.days=m.days||{};m.sun=m.sun||{};return m}
+function normM(m){m=m&&typeof m==='object'?m:{};m.goals=m.goals||{};Object.keys(GDEF).forEach(k=>m.goals[k]={...GDEF[k],...(m.goals[k]||{})});m.days=m.days||{};m.sun=m.sun||{};if(!m.v){if(Number(m.goals.mestrado.target)===720)m.goals.mestrado.target=600;m.v=2}return m}
 let M=normM((()=>{try{return JSON.parse(localStorage.getItem(LSM))}catch(e){return null}})());
 function saveMes(){try{localStorage.setItem(LSM,JSON.stringify(M))}catch(e){}}
 const clampM=d=>d<MX.first?MX.first:d>MX.last?MX.last:d;
@@ -706,12 +706,12 @@ function mMetas(){return Object.keys(GMETA).map(g=>{const s=gStat(g);const G=s.G
       <div class="field"><label for="mg-${g}-n">Nome</label><input id="mg-${g}-n" data-mg="${g}" data-f="name" maxlength="50" value="${esc(G.name)}"></div>
       <div class="inline"><div class="field"><label for="mg-${g}-t">Alvo${g==='mestrado'?' (min)':g==='logos'?' (páginas)':''}</label><input id="mg-${g}-t" data-mg="${g}" data-f="target" type="number" inputmode="numeric" min="0" value="${G.target}"></div>
       <div class="field"><label for="mg-${g}-a">Já feito antes de começar</label><input id="mg-${g}-a" data-mg="${g}" data-f="antes" type="number" inputmode="numeric" min="0" value="${G.antes==null?'':G.antes}" placeholder="${antesPh}"></div></div></div></details></div>`}).join('')}
-function mRotina(){return `<p class="note" style="font-size:14px">Enfermaria de segunda a sexta. Viagens: Fortaleza ${TRIPS[0].slice(0,2).map(dd).join('–')} e São Paulo ${TRIPS[1].slice(0,2).map(dd).join('–')}. Blocos cinza são fixos.</p>`+
+function mRotina(){return `<p class="note" style="font-size:14px">Enfermaria de segunda a sexta. Viagens: Fortaleza ${TRIPS[0].slice(0,2).map(dd).join('–')} e São Paulo ${TRIPS[1].slice(0,2).map(dd).join('–')}. Volta para casa até 10/11. Blocos cinza são fixos.</p>`+
   ROT.map(r=>`<section class="group"><div class="ghead"><span class="eyebrow">${r.label}</span></div><div class="list">${blocksOf('',r).map(b=>blkRow(null,b)).join('')}</div></section>`).join('')}
 function mPrompt(ws){const a=M.sun[ws]||{};const ss=Object.keys(GMETA).map(gStat);
   return `Revisão semanal do meu mês de novembro (semana de ${dd(ws)} a ${dd(addD(ws,6))}).
 
-Rotina: enfermaria 7h30–14h de segunda a sexta. Viagens: Fortaleza 19–21/11 e São Paulo 28–29/11.
+Rotina: enfermaria 7h30–14h de segunda a sexta. Viagens: volta para casa até 10/11, Fortaleza 19–21/11 e São Paulo 28–29/11.
 
 Progresso real nas metas (faltam ${ss[0].rd} dias no mês):
 ${ss.map(s=>`- ${s.G.name}: ${fv(s.g,s.done)} de ${fv(s.g,s.target)} (esperado até ontem: ${fv(s.g,s.exp)}) · ${ST[s.st]}`).join('\n')}
