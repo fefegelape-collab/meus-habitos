@@ -199,6 +199,47 @@ details.more[open] summary::before{content:"− "}
 details.more ul{margin:0 0 12px;padding-left:18px;font-size:13.5px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
 details.more li b{color:var(--ink);font-weight:600}
 .metas{display:flex;flex-direction:column;gap:8px;margin:0;padding-left:18px;font-size:14px}
+/* Mês (dashboard mensal) */
+.tabs .inner{grid-template-columns:repeat(7,auto)!important}
+.tabs button{font-size:12px;padding:9px 5px}
+.mseg{display:flex;gap:2px;background:var(--sunk);padding:4px;border-radius:99px;overflow-x:auto;scrollbar-width:none}
+.mseg button{flex:1;padding:8px 6px;border-radius:99px;font-size:13px;font-weight:600;color:var(--muted);white-space:nowrap}
+.mseg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgb(0 0 0 / .12)}
+.g-treino{--c:var(--move)} .g-mestrado{--c:var(--med)} .g-logos{--c:var(--read)} .g-none{--c:var(--other)}
+.blk{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:11px 14px;border-top:1px solid var(--line)}
+.blk:first-child{border-top:0}
+.blk .check{width:30px;height:30px}
+.blk .check:disabled{opacity:.35;cursor:default}
+.blk.done .check{background:var(--c)} .blk.done .check svg{opacity:1}
+.blk.done .hname,.blk.done input{color:var(--muted);text-decoration:line-through}
+.blk.fixed .hname{color:var(--muted);font-weight:500}
+.blk .tm{font-size:12.5px;color:var(--muted);font-weight:600}
+.blk input{font:inherit;font-weight:600;border:0;background:transparent;color:var(--ink);padding:6px 0;width:100%;min-width:0;outline:0}
+.fixdot{width:30px;height:30px;display:grid;place-items:center} .fixdot i{width:8px;height:8px;border-radius:2px;background:var(--line)}
+.plus{font-size:12px;font-weight:700;color:var(--c);white-space:nowrap}
+.badge{font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap;align-self:start}
+.badge.ok{background:color-mix(in srgb,var(--diet) 16%,var(--surface));color:var(--diet)}
+.badge.late{background:color-mix(in srgb,var(--move) 16%,var(--surface));color:var(--move)}
+.badge.hit{background:var(--accent);color:var(--accent-ink)}
+.gbar{position:relative;height:10px;border-radius:5px;background:var(--sunk);margin:4px 0}
+.gbar i{position:absolute;left:0;top:0;bottom:0;border-radius:5px;background:var(--c)}
+.gbar b{position:absolute;top:-4px;bottom:-4px;width:3px;background:var(--ink);border-radius:2px}
+.gsum{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:12px 14px;border-top:1px solid var(--line)}
+.gsum:first-child{border-top:0}
+.stats3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stats3>div{background:var(--sunk);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.stats3 b{font-family:var(--f-display);font-size:17px;color:var(--c)}
+.stats3 span{font-size:11.5px;color:var(--muted)}
+.wday{padding:11px 14px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:7px;text-align:left;width:100%}
+.wday:first-child{border-top:0}
+.wday.today{background:color-mix(in srgb,var(--accent) 8%,var(--surface))}
+.wday .hname{display:flex;justify-content:space-between;gap:8px}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.bchip{font-size:12px;font-weight:600;padding:3px 9px;border-radius:99px;background:color-mix(in srgb,var(--c) 14%,var(--surface));color:var(--c)}
+.bchip.done{background:var(--c);color:var(--surface)}
+.bchip.fixed{background:var(--sunk);color:var(--muted)}
+.mta{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px 12px;width:100%;min-height:72px;resize:vertical}
+.mta[readonly]{font-size:13px!important;color:var(--muted);min-height:200px}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 
@@ -209,6 +250,7 @@ details.more li b{color:var(--ink);font-weight:600}
 </div>
 <nav class="tabs"><div class="inner" role="tablist">
   <button id="tab-hoje" role="tab" aria-selected="true" data-tab="hoje">Dia</button>
+  <button id="tab-mes" role="tab" aria-selected="false" data-tab="mes">Mês</button>
   <button id="tab-dieta" role="tab" aria-selected="false" data-tab="dieta">Dieta</button>
   <button id="tab-treino" role="tab" aria-selected="false" data-tab="treino">Treino</button>
   <button id="tab-hist" role="tab" aria-selected="false" data-tab="hist">Histórico</button>
@@ -315,7 +357,7 @@ function render(){
   $('#bkbtn').hidden=!(S.loaded&&S.local);
   document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===S.view)));
   const af=document.activeElement&&document.activeElement.id;
-  $('#view').innerHTML=!S.loaded?'<p class="note">Carregando seus hábitos…</p>':S.view==='hoje'?viewDay():S.view==='dieta'?viewDiet():S.view==='treino'?viewTreino():S.view==='livros'?viewBooks():S.view==='tarefas'?viewTasks():viewHist();
+  $('#view').innerHTML=!S.loaded?'<p class="note">Carregando seus hábitos…</p>':S.view==='hoje'?viewDay():S.view==='mes'?viewMes():S.view==='dieta'?viewDiet():S.view==='treino'?viewTreino():S.view==='livros'?viewBooks():S.view==='tarefas'?viewTasks():viewHist();
   const q=$('#q-title');if(q){q.value=S.quickDraft||'';if(af==='q-title')q.focus()}
   if(!S.editing)renderSheet();
 }
@@ -578,12 +620,140 @@ function renderSheet(){const e=S.editing;const host=$('#sheetHost');if(!e){host.
 }
 function readForm(){const e=S.editing;if(!e)return;const tt=$('#f-ttitle');if(tt)e.title=tt.value;const du=$('#f-due');if(du)e.due=du.value;const no=$('#f-note');if(no)e.note=no.value;const ti=$('#f-title');if(ti)e.title=ti.value;const au=$('#f-author');if(au)e.author=au.value;const n=$('#f-name');if(n)e.name=n.value;const g=$('#f-goal');if(g)e.goal=Math.max(1,parseInt(g.value)||1);const u=$('#f-unit');if(u)e.unit=u.value}
 
+/* ---------- mês: dashboard de novembro ---------- */
+const MX={first:'2026-11-01',start:'2026-11-08',last:'2026-11-30'};
+const TRIPS=[['2026-11-19','2026-11-21','Fortaleza'],['2026-11-28','2026-11-29','São Paulo']];
+const GMETA={treino:{s:'Treinos'},mestrado:{s:'Mestrado'},logos:{s:'Logosofia'}};
+const GDEF={treino:{name:'Treinos',target:18,antes:null},mestrado:{name:'Mestrado · texto da qualificação',target:720,antes:0},logos:{name:'Logosofia',target:46,antes:0}};
+const BK={personal:{n:'Personal',g:'treino',v:1,h:'h-personal'},fullbody:{n:'Treino base · Fullbody',g:'treino',v:1,h:'h-musculacao'},cardio:{n:'Cardio · bike ou elíptico',g:'treino',v:1,h:'h-cardio'},
+  mestrado:{n:'Mestrado · qualificação',g:'mestrado',v:40},logos:{n:'Logosofia',g:'logos',v:2},revisao:{n:'Revisão da semana (aba Domingo)'}};
+const ROT=[
+ {k:'segqua',label:'Segunda e quarta',dows:[1,3],b:[['07:30–14:00','!Enfermaria'],['15:00–16:00','personal'],['16:30–17:10','mestrado'],['21:00','logos']]},
+ {k:'terqui',label:'Terça e quinta',dows:[2,4],b:[['07:30–14:00','!Enfermaria'],['15:00–16:00','fullbody'],['16:30–17:10','mestrado'],['21:00','logos']]},
+ {k:'sex',label:'Sexta',dows:[5],b:[['07:30–14:00','!Enfermaria'],['15:00–15:45','cardio'],['16:30–17:10','mestrado'],['21:00','logos']]},
+ {k:'sab',label:'Sábado',dows:[6],b:[['09:00–09:45','cardio'],['10:30–11:10','mestrado'],['21:00','logos']]},
+ {k:'dom',label:'Domingo',dows:[0],b:[['10:00–10:40','mestrado'],['18:00','revisao'],['21:00','logos']]},
+ {k:'viagem',label:'Dia de viagem',dows:[],b:[['Dia todo','!Viagem'],['Quando der','logos']]}];
+const ST={hit:'batida',ok:'no ritmo',late:'atrasada'};
+const LSM='meus-habitos.mes';
+function normM(m){m=m&&typeof m==='object'?m:{};m.goals=m.goals||{};Object.keys(GDEF).forEach(k=>m.goals[k]={...GDEF[k],...(m.goals[k]||{})});m.days=m.days||{};m.sun=m.sun||{};return m}
+let M=normM((()=>{try{return JSON.parse(localStorage.getItem(LSM))}catch(e){return null}})());
+function saveMes(){try{localStorage.setItem(LSM,JSON.stringify(M))}catch(e){}}
+const clampM=d=>d<MX.first?MX.first:d>MX.last?MX.last:d;
+const dd=s=>{const x=pd(s);return x.getDate()+'/'+pad(x.getMonth()+1)};
+const tripOf=d=>TRIPS.find(([a,b])=>d>=a&&d<=b);
+function rotOf(d){if(tripOf(d))return ROT[5];const w=pd(d).getDay();return ROT.find(r=>r.dows.includes(w))}
+function blocksOf(d,r){r=r||rotOf(d);const tr=r.k==='viagem'?tripOf(d):null;
+  return r.b.map(([t,k])=>k[0]==='!'?{t,key:k,fixed:true,n:k==='!Viagem'?(tr?'Viagem · '+tr[2]:'Viagem'):k.slice(1)}:{t,key:k,...BK[k]})}
+function eachDay(a,b,f){for(let d=a;d<=b;d=addD(d,1))f(d)}
+const TRH=['h-personal','h-musculacao','h-cardio'];
+const trCount=d=>TRH.filter(id=>!!getVal(d,id)).length;
+function bDone(d,b){return b.h?!!getVal(d,b.h):!!(M.days[d]&&M.days[d].b&&M.days[d].b[b.key])}
+function earned(g,a,b){let s=0;eachDay(a,b,d=>{if(g==='treino')s+=trCount(d);else blocksOf(d).forEach(x=>{if(x.g===g&&bDone(d,x))s+=x.v})});return s}
+function planned(g,a,b){let s=0;if(a>b)return 0;eachDay(a,b,d=>blocksOf(d).forEach(x=>{if(x.g===g)s+=x.v}));return s}
+function antesOf(g){const v=M.goals[g].antes;if(g==='treino'&&(v==null||v===''))return earned('treino',MX.first,addD(MX.start,-1));return Number(v)||0}
+function gStat(g){const G=M.goals[g],t=today();const target=Number(G.target)||0;const antes=antesOf(g);
+  const done=antes+earned(g,MX.start,MX.last);
+  const y=addD(t,-1),upto=y>MX.last?MX.last:y;const tot=planned(g,MX.start,MX.last),so=planned(g,MX.start,upto);
+  const exp=Math.min(target,antes+Math.max(0,target-antes)*(tot?so/tot:0));
+  const from=t<MX.start?MX.start:t;const rd=from>MX.last?0:Math.round((pd(MX.last)-pd(from))/864e5)+1;
+  const falta=Math.max(0,target-done);const st=done>=target?'hit':done>=0.9*exp?'ok':'late';
+  return {g,G,target,antes,done,exp,falta,rd,perDay:rd?falta/rd:falta,perWeek:rd?falta/Math.max(1,rd/7):falta,st}}
+const hm=n=>{n=Math.round(n);const h=Math.floor(n/60),m=n%60;return h?h+'h'+(m?pad(m):''):m+' min'};
+function fv(g,n){if(g==='mestrado')return hm(n);if(g==='logos'){n=Math.round(n);return n+(n===1?' página':' páginas')}
+  n=Math.round(n*10)/10;return fmt(n)+(n===1?' treino':' treinos')}
+function fRate(g,n,per){if(g==='mestrado')return hm(Math.ceil(n));if(g==='logos')return Math.ceil(n)+' pág';return fmt(Math.round(n*10)/10)+(per==='d'?'':'')}
+function mDayTitle(d){const x=pd(d);return (d===today()?'Hoje · ':'')+['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'][x.getDay()]+', '+x.getDate()+' nov'}
+function gbar(s){const p=s.target?Math.min(100,s.done/s.target*100):0,e=s.target?Math.min(100,s.exp/s.target*100):0;
+  return `<div class="gbar" role="img" aria-label="${fv(s.g,s.done)} de ${fv(s.g,s.target)}; esperado até ontem ${fv(s.g,s.exp)}"><i style="width:${p}%"></i><b style="left:calc(${e}% - 1.5px)"></b></div>`}
+
+function viewMes(){S.msub=S.msub||'hoje';S.mday=clampM(S.mday||today());
+  const subs=[['hoje','Hoje'],['semana','Semana'],['metas','Metas'],['rotina','Rotina'],['domingo','Domingo']];
+  const body=S.msub==='semana'?mSemana():S.msub==='metas'?mMetas():S.msub==='rotina'?mRotina():S.msub==='domingo'?mDomingo():mHoje();
+  return `<div class="wrap" style="padding:0"><div class="mseg">${subs.map(([k,l])=>`<button data-msub="${k}" aria-pressed="${S.msub===k}">${l}</button>`).join('')}</div>${body}</div>`}
+function blkRow(d,b){
+  if(b.fixed)return `<div class="blk fixed"><span class="fixdot"><i></i></span><div class="hinfo"><span class="hname">${esc(b.n)}</span><span class="tm">${esc(b.t)}</span></div><span></span></div>`;
+  const ok=d?bDone(d,b):false;const fut=!d||d>today();
+  const plus=b.g?'+'+b.v+' '+(b.g==='treino'?'treino':b.g==='mestrado'?'min':'páginas'):'';
+  return `<div class="blk g-${b.g||'none'} ${ok?'done':''}">${d?`<button class="check" data-mblock="${b.key}" aria-pressed="${ok}" ${fut?'disabled':''} aria-label="Marcar ${esc(b.n)}">${CHECK}</button>`:'<span class="fixdot"><i style="background:var(--c)"></i></span>'}
+    <div class="hinfo"><span class="hname">${esc(b.n)}</span><span class="tm">${esc(b.t)}</span></div><span class="plus">${plus}</span></div>`}
+function mHoje(){const d=S.mday,t=today();const x=M.days[d]||{};const top=x.top||[];
+  const tops=[0,1,2].map(i=>{const o=top[i]||{};return `<div class="blk g-none ${o.ok?'done':''}"><button class="check" data-mtop="${i}" aria-pressed="${!!o.ok}" aria-label="Concluir prioridade ${i+1}">${CHECK}</button><input data-mtopt="${i}" value="${esc(o.t||'')}" placeholder="Prioridade ${i+1}" maxlength="80" enterkeyhint="done" autocomplete="off"><span></span></div>`}).join('');
+  const sums=Object.keys(GMETA).map(g=>{const s=gStat(g);return `<div class="gsum g-${g}"><div><div class="hname">${esc(s.G.name)}</div><div class="hmeta"><span>${fv(g,s.done)} de ${fv(g,s.target)}</span><span>falta ${fv(g,s.falta)}</span></div></div><span class="badge ${s.st}">${ST[s.st]}</span><div style="grid-column:1/-1">${gbar(s)}</div></div>`}).join('');
+  return `<div class="daynav"><button class="iconbtn" data-mnav="-1" aria-label="Dia anterior" ${d<=MX.first?'disabled':''}>${ARW(-1)}</button><h1 style="font-size:clamp(22px,6vw,30px)">${mDayTitle(d)}</h1>
+      ${d!==clampM(t)?'<button class="chip link" data-act="mtoday">Hoje</button>':''}<button class="iconbtn" data-mnav="1" aria-label="Próximo dia" ${d>=MX.last?'disabled':''}>${ARW(1)}</button></div>
+    <section class="group"><div class="ghead"><span class="eyebrow">Top 3 do dia</span></div><div class="list">${tops}</div></section>
+    <section class="group"><div class="ghead"><span class="eyebrow">${esc(rotOf(d).label)}</span></div><div class="list">${blocksOf(d).map(b=>blkRow(d,b)).join('')}</div>
+      ${d>t?'<p class="note">Dia futuro: dá para escrever o top 3, mas os blocos só podem ser marcados no dia.</p>':''}</section>
+    <section class="group"><div class="ghead"><span class="eyebrow">Metas do mês</span></div><div class="list">${sums}</div><p class="note">A marca preta na barra é onde você deveria estar até ontem.</p></section>`}
+function mSemana(){const ws=weekStart(S.mday),t=today();const stats=Object.keys(GMETA).map(gStat);
+  let days='';for(let i=0;i<7;i++){const d=addD(ws,i);if(d<MX.first||d>MX.last)continue;
+    const chips=blocksOf(d).map(b=>b.fixed?`<span class="bchip fixed">${esc(b.n)}</span>`:`<span class="bchip g-${b.g||'none'} ${bDone(d,b)?'done':''}">${esc(b.t.split('–')[0])} ${esc(b.g==='treino'?b.n.split(' ·')[0]:b.g?GMETA[b.g].s:b.n.split(' (')[0])}</span>`).join('');
+    days+=`<button class="wday ${d===t?'today':''}" data-mgo="${d}"><span class="hname"><span>${mDayTitle(d)}</span><span class="tm" style="font-size:12px;color:var(--muted)">${esc(rotOf(d).label)}</span></span><span class="chips">${chips}</span></button>`}
+  return `<div class="card"><div class="mhead"><button class="iconbtn" data-mweek="-1" aria-label="Semana anterior" ${ws<=weekStart(MX.first)?'disabled':''}>${ARW(-1)}</button><h2>${dd(ws<MX.first?MX.first:ws)} – ${dd(addD(ws,6)>MX.last?MX.last:addD(ws,6))}</h2><button class="iconbtn" data-mweek="1" aria-label="Próxima semana" ${addD(ws,7)>MX.last?'disabled':''}>${ARW(1)}</button></div>
+    <p class="note">Quanto fazer por semana daqui até 30/11, recalculado pelo que falta:</p>
+    <div class="stats3">${stats.map(s=>`<div class="g-${s.g}"><b>${s.st==='hit'?'✓':fRate(s.g,s.perWeek)}</b><span>${GMETA[s.g].s}${s.g==='treino'&&s.st!=='hit'?' / sem':''}</span></div>`).join('')}</div></div>
+    <div class="list">${days}</div><p class="note">Toque num dia para abrir e marcar os blocos.</p>`}
+function mMetas(){return Object.keys(GMETA).map(g=>{const s=gStat(g);const G=s.G;
+  const antesPh=g==='treino'?`automático: ${antesOf('treino')}`:'0';
+  return `<div class="card g-${g}"><div class="mhead"><h2 style="font-size:19px">${esc(G.name)}</h2><span class="badge ${s.st}">${ST[s.st]}</span></div>
+    <div class="big" style="color:var(--c)">${fv(g,s.done)} <small>de ${fv(g,s.target)}</small></div>${gbar(s)}
+    <p class="note">Esperado até ontem: ${fv(g,s.exp)}${s.antes?` · já feito antes de começar: ${fv(g,s.antes)}`:''}</p>
+    <div class="stats3"><div><b>${fv(g,s.falta).replace(/ (treinos?|páginas?)$/,'')}</b><span>falta</span></div><div><b>${s.st==='hit'?'✓':fRate(g,s.perDay)}</b><span>por dia</span></div><div><b>${s.st==='hit'?'✓':fRate(g,s.perWeek)}</b><span>por semana</span></div></div>
+    ${g==='treino'?'<p class="note">Conta sozinho quando você marca personal, fullbody ou cardio, aqui ou na aba Treino.</p>':''}
+    <details class="more" style="padding:0" data-k="mg-${g}" ${S.open&&S.open['mg-'+g]?'open':''}><summary>Editar meta</summary>
+      <div style="display:flex;flex-direction:column;gap:10px;padding-bottom:6px">
+      <div class="field"><label for="mg-${g}-n">Nome</label><input id="mg-${g}-n" data-mg="${g}" data-f="name" maxlength="50" value="${esc(G.name)}"></div>
+      <div class="inline"><div class="field"><label for="mg-${g}-t">Alvo${g==='mestrado'?' (min)':g==='logos'?' (páginas)':''}</label><input id="mg-${g}-t" data-mg="${g}" data-f="target" type="number" inputmode="numeric" min="0" value="${G.target}"></div>
+      <div class="field"><label for="mg-${g}-a">Já feito antes de começar</label><input id="mg-${g}-a" data-mg="${g}" data-f="antes" type="number" inputmode="numeric" min="0" value="${G.antes==null?'':G.antes}" placeholder="${antesPh}"></div></div></div></details></div>`}).join('')}
+function mRotina(){return `<p class="note" style="font-size:14px">Enfermaria de segunda a sexta. Viagens: Fortaleza ${TRIPS[0].slice(0,2).map(dd).join('–')} e São Paulo ${TRIPS[1].slice(0,2).map(dd).join('–')}. Blocos cinza são fixos.</p>`+
+  ROT.map(r=>`<section class="group"><div class="ghead"><span class="eyebrow">${r.label}</span></div><div class="list">${blocksOf('',r).map(b=>blkRow(null,b)).join('')}</div></section>`).join('')}
+function mPrompt(ws){const a=M.sun[ws]||{};const ss=Object.keys(GMETA).map(gStat);
+  return `Revisão semanal do meu mês de novembro (semana de ${dd(ws)} a ${dd(addD(ws,6))}).
+
+Rotina: enfermaria 7h30–14h de segunda a sexta. Viagens: Fortaleza 19–21/11 e São Paulo 28–29/11.
+
+Progresso real nas metas (faltam ${ss[0].rd} dias no mês):
+${ss.map(s=>`- ${s.G.name}: ${fv(s.g,s.done)} de ${fv(s.g,s.target)} (esperado até ontem: ${fv(s.g,s.exp)}) · ${ST[s.st]}`).join('\n')}
+
+O que funcionou essa semana: ${a.q1||'—'}
+O que travou: ${a.q2||'—'}
+O que corto ou mudo: ${a.q3||'—'}
+
+Com base nisso, ajusta minha rotina-padrão e o ritmo das metas para a próxima semana. Se alguma meta estiver irreal para o tempo que eu tenho, me fala.`}
+function mDomingo(){const ws=weekStart(S.mday);const a=M.sun[ws]||{};
+  const Q=[['q1','O que funcionou essa semana?'],['q2','O que travou?'],['q3','O que corto ou mudo?']];
+  return `<div class="card"><div class="mhead"><button class="iconbtn" data-mweek="-1" aria-label="Semana anterior" ${ws<=weekStart(MX.first)?'disabled':''}>${ARW(-1)}</button><h2>Semana ${dd(ws)} – ${dd(addD(ws,6))}</h2><button class="iconbtn" data-mweek="1" aria-label="Próxima semana" ${addD(ws,7)>MX.last?'disabled':''}>${ARW(1)}</button></div>
+    ${Q.map(([k,l])=>`<div class="field"><label for="ms-${k}">${l}</label><textarea class="mta" id="ms-${k}" data-msun="${k}" maxlength="600">${esc(a[k]||'')}</textarea></div>`).join('')}</div>
+    <div class="card"><div class="mhead"><h2 style="font-size:19px">Prompt pronto</h2><button class="primary" data-act="mcopy">Copiar</button></div>
+    <textarea class="mta" id="mprompt" readonly aria-label="Prompt com seu progresso">${esc(mPrompt(ws))}</textarea>
+    <p class="note">Cole numa conversa com o Claude para ajustar a semana seguinte.</p></div>`}
+document.addEventListener('input',ev=>{const e=ev.target;if(!e.dataset)return;
+  if(e.dataset.mtopt!=null){const x=M.days[S.mday]=M.days[S.mday]||{};const top=x.top=(x.top||[]).slice();while(top.length<3)top.push({});const i=+e.dataset.mtopt;top[i]={...top[i],t:e.value};saveMes()}
+  if(e.dataset.msun){const ws=weekStart(S.mday);M.sun[ws]={...(M.sun[ws]||{}),[e.dataset.msun]:e.value};saveMes();const p=$('#mprompt');if(p)p.value=mPrompt(ws)}});
+document.addEventListener('change',ev=>{const e=ev.target;if(!e.dataset||!e.dataset.mg)return;const g=e.dataset.mg,f=e.dataset.f,G=M.goals[g];
+  if(f==='name')G.name=e.value.trim()||GDEF[g].name;else{const v=e.value.trim();G[f]=v===''?(f==='antes'&&g==='treino'?null:0):Math.max(0,Number(v.replace(',','.'))||0)}
+  saveMes();render()});
+function mClick(ds_){
+  if(ds_.msub){S.msub=ds_.msub;render();window.scrollTo(0,0);return true}
+  if(ds_.mnav){const n=addD(S.mday,+ds_.mnav);if(n>=MX.first&&n<=MX.last){S.mday=n;render()}return true}
+  if(ds_.mweek){S.mday=clampM(addD(weekStart(S.mday),7*ds_.mweek+(+ds_.mweek>0?0:6)));render();return true}
+  if(ds_.mgo){S.mday=ds_.mgo;S.msub='hoje';render();window.scrollTo(0,0);return true}
+  if(ds_.mtop){const x=M.days[S.mday]=M.days[S.mday]||{};const top=x.top=(x.top||[]).slice();while(top.length<3)top.push({});const i=+ds_.mtop;top[i]={...top[i],ok:!top[i].ok};saveMes();render();return true}
+  if(ds_.mblock){const d=S.mday;if(d>today())return true;const b=blocksOf(d).find(x=>x.key===ds_.mblock);if(!b)return true;const on=bDone(d,b);
+    if(b.h)setLog(d,b.h,!on);
+    else{const x=M.days[d]=M.days[d]||{};x.b={...(x.b||{}),[b.key]:!on};saveMes();
+      if(!on&&b.g==='mestrado')setLog(d,'h-clinica',true);else if(!on&&b.g==='logos')setLog(d,'h-leitura',true);else render()}
+    if(!on&&b.g)toast('+'+b.v+' '+(b.g==='treino'?'treino':b.g==='mestrado'?'min de mestrado':'páginas')+' na meta');return true}
+  return false}
+
 /* ---------- events ---------- */
 document.addEventListener('click',ev=>{
   const b=ev.target.closest('button,[data-act="close"]');if(!b)return;
   if(b.classList.contains('scrim')&&ev.target!==b)return;
   const ds_=b.dataset;
   if(ds_.tab){S.view=ds_.tab;render();return}
+  if(mClick(ds_))return;
   if(ds_.nav){const n=addD(S.day,+ds_.nav);if(n<=today()){S.day=n;render()}return}
   if(ds_.day){S.day=ds_.day;S.view='hoje';render();window.scrollTo(0,0);return}
   if(ds_.month){const[y,m]=S.month.split('-').map(Number);const d=new Date(y,m-1+(+ds_.month),1);S.month=d.getFullYear()+'-'+pad(d.getMonth()+1);render();return}
@@ -612,6 +782,9 @@ document.addEventListener('click',ev=>{
     case 'cleardone':if(!S.armClear){S.armClear=true;render()}else{S.armClear=false;S.tasks.filter(t=>t.done).forEach(t=>removeTask(t.id));toast('Concluídas apagadas')}break;
     case 'starters':addStarters();break;
     case 'gotoday':S.day=today();render();break;
+    case 'mtoday':S.mday=clampM(today());render();break;
+    case 'mcopy':{const p=$('#mprompt');const txt=p?p.value:'';const fb=()=>{if(!p)return;p.removeAttribute('readonly');p.select();p.setSelectionRange(0,txt.length);let ok=false;try{ok=document.execCommand('copy')}catch(e){}p.setAttribute('readonly','');p.blur();toast(ok?'Prompt copiado':'Selecione o texto e copie')};
+      if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(()=>toast('Prompt copiado'),fb);else fb();break}
     case 'close':S.editing=null;renderSheet();break;
     case 'menu':S.editing={_type:'menu'};renderSheet();break;
     case 'export':exportBackup();break;
@@ -661,7 +834,7 @@ function migrateLocal(){let ch=false;const has=id=>S.habits.some(h=>h.id===id);
   fix('h-musculacao',{name:'Treino base (Fullbody)',freq:2});fix('h-cardio',{name:'Cardio (bike ou elíptico)',freq:2});
   S.habits.sort((a,b)=>(a.order||0)-(b.order||0));if(ch)lsSave()}
 function exportBackup(){const h={};S.habits.forEach(x=>h[x.id]=x);const b={};S.books.forEach(x=>b[x.id]=x);const tk={};S.tasks.forEach(x=>tk[x.id]=x);
-  const blob=new Blob([JSON.stringify({habits:h,logs:S.logs,books:b,tasks:tk,settings:S.settings})],{type:'application/json'});
+  const blob=new Blob([JSON.stringify({habits:h,logs:S.logs,books:b,tasks:tk,settings:S.settings,mes:M})],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='meus-habitos-backup-'+today()+'.json';document.body.appendChild(a);a.click();
   setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);toast('Backup salvo')}
 function importData(o){
@@ -672,7 +845,7 @@ function importData(o){
   if(o&&o.habits){const byId=(arr,obj)=>{const m={};arr.forEach(x=>m[x.id]=x);Object.entries(obj||{}).forEach(([k,v])=>m[k]={...v,id:k});return Object.values(m)};
     S.habits=byId(S.habits,o.habits).sort((a,b)=>(a.order||0)-(b.order||0));S.books=byId(S.books,o.books);S.tasks=byId(S.tasks,o.tasks);
     Object.entries(o.logs||{}).forEach(([m,v])=>{const cur=S.logs[m]||{d:{}};const d={...(cur.d||{})};Object.entries(v.d||{}).forEach(([day,x])=>d[day]={...(d[day]||{}),...x});S.logs={...S.logs,[m]:{d}}});
-    if(o.settings)S.settings={...S.settings,...o.settings};migrateLocal();lsSave();S.editing=null;renderSheet();render();toast('Backup restaurado');return}
+    if(o.settings)S.settings={...S.settings,...o.settings};if(o.mes){M=normM(o.mes);saveMes()}migrateLocal();lsSave();S.editing=null;renderSheet();render();toast('Backup restaurado');return}
   toast('Esse arquivo não é um backup nem um plano.')}
 document.addEventListener('change',ev=>{if(ev.target.id!=='filein')return;const f=ev.target.files&&ev.target.files[0];if(!f)return;
   const r=new FileReader();r.onload=()=>{try{importData(JSON.parse(r.result))}catch(e){toast('Não consegui ler esse arquivo.')}ev.target.value=''};r.readAsText(f)});
