@@ -1255,6 +1255,19 @@ document.addEventListener('change',ev=>{const t=ev.target;if(!t.dataset)return;
 /* rolar a barra de abas até a aba ativa */
 function pTabScroll(){const i=document.querySelector('.tabs .inner');const b=i&&i.querySelector('button[aria-selected="true"]');if(!b)return;
   const l=b.offsetLeft,r=l+b.offsetWidth;if(l<i.scrollLeft)i.scrollLeft=l-8;else if(r>i.scrollLeft+i.clientWidth)i.scrollLeft=r-i.clientWidth+8}
+/* ---------- caixa de entrada: registros enviados pelo Claude (inbox.json) ---------- */
+function pApplyInbox(o){if(!o||!Array.isArray(o.entries))return 0;P.applied=P.applied||{};let n=0,k=0;
+  o.entries.forEach(e=>{if(!e||!e.id||P.applied[e.id]||!e.date)return;const x=pday(e.date);
+    if(e.meal&&Array.isArray(e.items)){x.f=x.f||{};const arr=(x.f[e.meal]||[]).slice();
+      e.items.forEach(([fid,q,ui])=>{const f=foodById(fid);if(f){const it=mkItem(f,num(q),ui||0);arr.push(it);k+=it.kcal}});x.f[e.meal]=arr}
+    if(e.vinho)x.vinho=(x.vinho||0)+num(e.vinho);
+    if(Array.isArray(e.ex))x.ex=[...(x.ex||[]),...e.ex.map(z=>({id:'e'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),t:z.t||'outro',min:num(z.min),int:z.int==null?1:z.int,...(z.kcal!=null?{kcal:num(z.kcal)}:{})}))];
+    if(e.peso)P.peso[e.date]=r1(num(e.peso));
+    P.applied[e.id]=new Date().toISOString();n++});
+  if(n){saveP();render();toast(k?'Claude registrou '+fk(k):'Registro do Claude adicionado')}return n}
+function pFetchInbox(){try{if(!/^https?:/.test(location.protocol))return;fetch('inbox.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(pApplyInbox).catch(()=>{})}catch(e){}}
+setTimeout(pFetchInbox,800);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)pFetchInbox()});
 const _renderOrig=render;render=function(){_renderOrig();try{pTabScroll()}catch(e){}};
 if(S.loaded)render();
 </script>
