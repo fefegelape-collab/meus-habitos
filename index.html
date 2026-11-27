@@ -287,6 +287,15 @@ details.more li b{color:var(--ink);font-weight:600}
 .pres-i small{font-size:12px;color:var(--muted)}
 .pprev{background:var(--sunk);border-radius:10px;padding:12px;font-size:15px}
 .sheet .seg button{font-size:13px;padding:7px 12px}
+.zstrip{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:0 14px 12px}
+.zc{border-radius:8px;padding:6px 4px;text-align:center;display:flex;flex-direction:column;gap:1px;font-size:11.5px;line-height:1.25}
+.zc b{font-family:var(--f-display);font-size:13px}
+.zc small{font-size:10.5px;color:var(--muted)}
+.zc.Z1{background:color-mix(in srgb,var(--med) 14%,var(--surface))}.zc.Z1 b{color:var(--med)}
+.zc.Z2{background:color-mix(in srgb,var(--diet) 14%,var(--surface))}.zc.Z2 b{color:var(--diet)}
+.zc.Z3{background:color-mix(in srgb,var(--read) 16%,var(--surface))}.zc.Z3 b{color:var(--read)}
+.zc.Z4{background:color-mix(in srgb,var(--move) 16%,var(--surface))}.zc.Z4 b{color:var(--move)}
+.zc.Z5{background:color-mix(in srgb,var(--danger) 14%,var(--surface))}.zc.Z5 b{color:var(--danger)}
 </style>
 
 <div class="wrap" id="app">
@@ -522,11 +531,19 @@ let CARDIO={
   {n:'Intervalado Z3',lv:'Leve',aq:"2' Z1 + 3' Z2",b:"4 × [3' Z3 + 2' Z2]"},
   {n:'Progressivo Z3 → Z4',lv:'Moderada',aq:"2' Z1 + 2' Z2 + 1' Z3",b:"3 × [3' Z3 + 2' Z4 + 1' Z2] + 2' Z3"},
   {n:'Blocos Z3 + Z4',lv:'Alta',aq:"2' Z1 + 2' Z2 + 1' Z3",b:"4 × [2' Z3 + 2' Z4 + 1' Z2]"},
-  {n:'Blocos longos Z3 + Z4',lv:'Muito alta',aq:"2' Z1 + 2' Z2 + 1' Z3",b:"3 × [2' Z3 + 3' Z4 + 1' Z2] + 2' Z3"}]}};
+  {n:'Blocos longos Z3 + Z4',lv:'Muito alta',aq:"2' Z1 + 2' Z2 + 1' Z3",b:"3 × [2' Z3 + 3' Z4 + 1' Z2] + 2' Z3"}]},
+ corrida:{label:'Corrida',t:[
+  {n:'Contínuo leve',lv:'Leve',aq:"caminhada rápida em Z1",bl:'25 min',b:"corrida contínua em Z2 (138–152), ~8 km/h, dá para conversar"},
+  {n:'Intervalado Z3',lv:'Moderada',aq:"2' caminhada Z1 + 3' trote Z2",b:"5 × [2' Z3 (153–167), ~9–9,5 km/h + 2' trote Z2]"},
+  {n:'Ritmo contínuo',lv:'Alta',aq:"2' Z1 + 3' Z2",b:"2' Z2 + 15' contínuo em Z3 alta (160–167) + 3' Z2"},
+  {n:'Tiros Z4',lv:'Muito alta',aq:"2' Z1 + 2' Z2 + 1' Z3",b:"8 × [1' Z4 (168–181), ~10–11 km/h + 1'30\" trote Z2]"},
+  {n:'Longão',lv:'Leve, 1× na semana',extra:1,aq:"caminhada e trote em Z1",bl:'40 a 80 min',b:"contínuo em Z2 (138–152), sem passar de 152. Some ~10 min por semana"}]}};
+const ZPACE={Z1:'caminhada rápida',Z2:'~7,5–8,5 km/h',Z3:'~9–9,5 km/h',Z4:'~10–11 km/h',Z5:'tiro curto'};
 const ZONES=[['Z1','108–137','recuperação'],['Z2','138–152','leve a moderada'],['Z3','153–167','moderada'],['Z4','168–181','alta'],['Z5','182–196','muito alta']];
 const cardioTag=(m,i)=>CARDIO[m].label+' · Treino '+(i+1);
 function nextCardio(m){const t=today();for(let k=0;k<120;k++){const d=addD(t,-k);const v=getVal(d,'h-cardio');
-  if(typeof v==='string'&&v.startsWith(CARDIO[m].label)){const n=parseInt(v.split('Treino ')[1])||0;return n%4}}return 0}
+  if(typeof v==='string'&&v.startsWith(CARDIO[m].label)){const n=parseInt(v.split('Treino ')[1])||0;const o=CARDIO[m].t[n-1];if(o&&o.extra)continue;
+    const seq=CARDIO[m].t.filter(x=>!x.extra).length||1;return n%seq}}return 0}
 function wkDots(id){const h=S.habits.find(x=>x.id===id)||{id,kind:'check',freq:2};const c=weekCount(h,weekStart(S.day));const f=h.freq||2;
   let s='';for(let i=0;i<Math.max(f,c);i++)s+=`<i class="${i<c?'on':''}"></i>`;return {c,f,dots:`<span class="wk">${s}</span>`}}
 function wHead(id,time,title){const h=S.habits.find(x=>x.id===id)||{id,kind:'check'};const ok=isDone(h,S.day);const v=getVal(S.day,id);const w=wkDots(id);
@@ -538,8 +555,8 @@ function viewTreino(){
   const f=wHead('h-musculacao','2× por semana','Treino base · Fullbody');
   const c=wHead('h-cardio','2× por semana · 30 min','Cardio');
   const fb=FULLBODY.map((ss,i)=>`<div class="sslabel">Super série ${i+1}</div>`+ss.map(e=>`<div class="ex" style="border-top:0"><span>${e[0]}${e[2]?`<span class="ld"> · ${e[2]}</span>`:''}</span><span class="sr">${e[1]}</span></div>`).join('')).join('');
-  const opts=CARDIO[m].t.map((o,i)=>{const tag=cardioTag(m,i);return `<button class="opt ${cv===tag?'sel':''}" data-cardio="${i}"><span class="radio"></span><span><span class="oname">Treino ${i+1} · ${o.n}${i===nx&&cv!==tag?'<span class="next">próximo</span>':''}</span>
-    <span class="oitems">Intensidade ${o.lv.toLowerCase()}. Aquecimento 5 min (${o.aq}) · <b>Bloco 20 min: ${o.b}</b> · Desaquecimento 5 min em Z1</span></span></button>`}).join('');
+  const opts=CARDIO[m].t.map((o,i)=>{const tag=cardioTag(m,i);return `<button class="opt ${cv===tag?'sel':''}" data-cardio="${i}"><span class="radio"></span><span><span class="oname">${o.extra?'':'Treino '+(i+1)+' · '}${o.n}${i===nx&&cv!==tag&&!o.extra?'<span class="next">próximo</span>':''}</span>
+    <span class="oitems">Intensidade ${o.lv.toLowerCase()}. Aquecimento 5 min (${o.aq}) · <b>Bloco ${o.bl||'20 min'}: ${o.b}</b> · Desaquecimento 5 min em Z1</span></span></button>`}).join('');
   return `<div class="wrap" style="padding:0">
     <div class="daynav"><button class="iconbtn" data-nav="-1" aria-label="Dia anterior">${ARW(-1)}</button><h1>${niceDay(d)}</h1>
       ${d!==t?'<button class="chip link" data-act="gotoday">Ir para hoje</button>':''}
@@ -550,9 +567,10 @@ function viewTreino(){
     <section class="meal move ${f.ok?'done':''}">${f.html}<details class="more" style="padding:0" data-k="fb" ${S.open&&S.open.fb?'open':''}><summary style="padding-inline:14px">Ver exercícios</summary><div>${fb}</div></details></section>
     <section class="meal move ${c.ok?'done':''}">${c.html}
       <div style="padding:0 14px 12px"><div class="seg">${Object.entries(CARDIO).map(([k,v])=>`<button data-cmod="${k}" aria-pressed="${k===m}">${v.label}</button>`).join('')}</div></div>
+      <div class="zstrip">${ZONES.map(z=>`<div class="zc ${z[0]}"><b>${z[0]}</b><span>${z[1]}</span>${m==='corrida'?`<small>${ZPACE[z[0]]}</small>`:''}</div>`).join('')}</div>
       <div class="opts">${opts}</div>
       <details class="more" data-k="zn" ${S.open&&S.open.zn?'open':''}><summary>Zonas e orientações</summary><div class="zones">${ZONES.map(z=>`<b>${z[0]}</b><span>${z[1]} bpm · ${z[2]}</span>`).join('')}</div>
-      <ul><li>Use os treinos em sequência: 1 → 2 → 3 → 4, conforme a adaptação.</li><li>A FC demora alguns segundos para subir nos estímulos curtos. Use também a percepção de esforço, cadência e resistência.</li><li>Não aumente demais a carga só para bater a FC.</li><li>Mantenha as recuperações realmente leves.</li></ul></details></section>
+      <ul><li>Use os treinos em sequência: 1 → 2 → 3 → 4, conforme a adaptação.${m==='corrida'?' O longão é à parte, 1× por semana.':''}</li>${m==='corrida'?'<li>As velocidades da corrida são aproximadas (esteira, 1% de inclinação). Quem manda é a FC: se passar da zona, diminua.</li>':''}<li>A FC demora alguns segundos para subir nos estímulos curtos. Use também a percepção de esforço, cadência e resistência.</li><li>Não aumente demais a carga só para bater a FC.</li><li>Mantenha as recuperações realmente leves.</li></ul></details></section>
   </div>`;
 }
 const stepOf=h=>h.goal>=5000?1000:h.goal>=500?100:h.goal>=50?10:1;
@@ -872,7 +890,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&today()!=
 let PLANVER='outubro de 2026 (dieta Luanne Rocha + treinos atuais)';
 const LSP='meus-habitos.plano';
 function applyPlan(p){if(!p)return;if(Array.isArray(p.dieta))PLAN=p.dieta;if(Array.isArray(p.metas))METAS=p.metas;
-  if(Array.isArray(p.fullbody))FULLBODY=p.fullbody;if(p.cardio&&typeof p.cardio==='object')CARDIO=p.cardio;if(p.versao)PLANVER=String(p.versao)}
+  if(Array.isArray(p.fullbody))FULLBODY=p.fullbody;if(p.cardio&&typeof p.cardio==='object')CARDIO={...CARDIO,...p.cardio};if(p.versao)PLANVER=String(p.versao)}
 try{applyPlan(JSON.parse(localStorage.getItem(LSP)))}catch(e){}
 const NEWHAB=[
   {id:'h-cafe',name:'Café da manhã do plano (05:40)',cat:'dieta',kind:'check',freq:7,order:2.1},
@@ -1049,8 +1067,8 @@ function pSync(date,hid,val){
     x.f[hid]=arr;saveP();return}
   if(EXSRC[hid]){const x=pday(date);let ex=(x.ex||[]);const [t,min,int]=EXSRC[hid];
     if(!val){ex=ex.filter(e=>e.src!==hid)}
-    else{let tt=t;if(hid==='h-cardio'&&typeof val==='string')tt=val.startsWith('Elíptico')?'eliptico':'bike';
-      const ex0=ex.find(e=>e.src===hid);if(ex0){if(hid==='h-cardio'&&!ex0.edited)ex0.t=tt}else ex=[...ex,{id:'e'+Date.now().toString(36),t:tt,min,int,src:hid}]}
+    else{let tt=t;if(hid==='h-cardio'&&typeof val==='string')tt=val.startsWith('Elíptico')?'eliptico':val.startsWith('Corrida')?'corrida':'bike';
+      const mm=hid==='h-cardio'&&typeof val==='string'&&/Corrida · Treino 5/.test(val)?60:tt==='corrida'?35:min;const ex0=ex.find(e=>e.src===hid);if(ex0){if(hid==='h-cardio'&&!ex0.edited){ex0.t=tt;ex0.min=mm}}else ex=[...ex,{id:'e'+Date.now().toString(36),t:tt,min:mm,int,src:hid}]}
     x.ex=ex;saveP()}}
 const _setLogOrig=setLog;
 setLog=function(date,hid,val){try{pSync(date,hid,val)}catch(e){}return _setLogOrig(date,hid,val)};
